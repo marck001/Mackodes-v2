@@ -1,4 +1,4 @@
-const { hasRole} = require('../../functions/general/hasRole')
+const { hasRole } = require('../../functions/general/hasRole')
 const { isVoiceChannel } = require('../../functions/voice-channels/isVoiceChannel')
 module.exports = {
 
@@ -9,36 +9,19 @@ module.exports = {
 
         try {
 
-            if (!isVoiceChannel(interaction) ||!hasRole(interaction)) return;
+            if (!isVoiceChannel(interaction) || !hasRole(interaction)) return;
 
-            
+
             await interaction.deferReply();
             console.log('first')
-            const queue = client.distube.getQueue(interaction);
+            const queue = client.player.getQueue(interaction.guild.id);
 
-            if (!queue || !queue.songs.length) {
-              await  interaction.editReply("Queue is empty");
-                return;
+            if (!queue || !queue.playing) {
+                return interaction.editReply({ content: 'There is no song currently playing!', ephemeral: true });
             }
 
-            if (queue.playing) {
-
-                if(queue.songs.length<=0){
-               await     interaction.editReply("There's no next song");
-                    return;
-                }
-       
-                await queue.skip();
-
-                console.log('skip')
-
-                await interaction.followUp({
-                    content: `**Skipped Song**`,
-                    ephemeral: true
-                });
-            } else {
-              await  interaction.editReply("Nothing is getting played");
-            }
+            queue.skip();
+            await interaction.editReply({ content: 'Skipped to the next song!', ephemeral: true });
 
         } catch (err) {
 

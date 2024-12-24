@@ -7,10 +7,6 @@ const Song = sequelize.define('Song', {
         autoIncrement: true,
         primaryKey: true,
     },
-    userId: {
-        type: DataTypes.STRING(20),
-        allowNull: false,
-    },
     guildId: {
         type: DataTypes.STRING(20),
         allowNull: false,
@@ -19,7 +15,7 @@ const Song = sequelize.define('Song', {
         type: DataTypes.STRING(50),
         allowNull: false,
     },
-    url: {
+    path: {
         type: DataTypes.STRING,
         allowNull: false,
     },

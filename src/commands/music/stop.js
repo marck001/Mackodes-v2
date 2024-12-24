@@ -12,7 +12,7 @@ module.exports = {
 
             if (!isVoiceChannel(interaction) ||!hasRole(interaction)) return;
 
-            const queue = client.distube.getQueue(interaction);
+            const queue = client.player.getQueue(interaction.guild.id);
 
             if (!queue) {
             await    interaction.reply("Queue is empty");
@@ -20,7 +20,7 @@ module.exports = {
             }
 
             if (queue.playing) {
-            await    queue.stop(interaction);
+            await    queue.delete();
 
              await   interaction.reply("I stopped playing music");
 

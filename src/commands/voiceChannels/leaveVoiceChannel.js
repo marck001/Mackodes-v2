@@ -8,30 +8,28 @@ module.exports = {
 
   callback: async (client, interaction) => {
 
-    try{
-    const myChannel = interaction.member.voice.channel;
-
     if (!isVoiceChannel(interaction)) return;
+    const myChannel = interaction.member.voice.channel;
+    const connection = getVoiceConnection(myChannel.guild.id);
 
 
-    client.distube.voices.leave(interaction);
+    if (connection) {
+      connection.destroy();
 
-        interaction.reply({
-          content: `Successfully left the voice channel **${myChannel.name}**`,
-          ephemeral: true,
-        });
+      interaction.reply({
+        content: `Successfully left the voice channel **${myChannel.name}**`,
+        ephemeral: true,
+      });
 
-        /*
-        connection.on(VoiceConnectionStatus.Disconnected, () => {
-          console.log('The connection has entered the disconnected state');
-        });
-        */
+      connection.on(VoiceConnectionStatus.Disconnected, () => {
+        console.log('The connection has entered the disconnected state');
+      });
 
-    
-
-  }catch(err){
-    console.log(err)
-  }
-
+    } else {
+      interaction.reply({
+        content: `There's no a voice chat connection established`,
+        ephemeral: true,
+      });
+    }
   },
 };

@@ -1,7 +1,7 @@
 require('dotenv').config();
 const initializeDatabase = require('./db/dbInit');
-const { DisTube } = require('distube');
-const { YtDlpPlugin } = require("@distube/yt-dlp");
+const { Player } = require('discord-player');
+const { AttachmentExtractor } = require('@discord-player/extractor');
 
 (async () => {
   try {
@@ -32,6 +32,7 @@ const { YtDlpPlugin } = require("@distube/yt-dlp");
 
     client.deleteMessages = false;
 
+    /*
     client.distube = new DisTube(client, {
       emitNewSongOnly: true,
       emitAddSongWhenCreatingQueue: false,
@@ -40,8 +41,17 @@ const { YtDlpPlugin } = require("@distube/yt-dlp");
       savePreviousSongs: true,
 
     });
+     */
+    client.player = new Player(client, {
+      ytdlOptions: {
+        quality: 'highestaudio',
+        highWaterMark: 1 << 25,
+      },
+    });
 
     eventHandler(client);
+    await client.player.extractors.register(AttachmentExtractor);
+    console.log("Extractor plugin registered successfully.");
 
     client.on('ready', (c) => {
       client.user.setActivity('Music');

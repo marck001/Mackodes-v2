@@ -16,7 +16,7 @@ module.exports = {
             await interaction.deferReply();
           //  const voiceChannel = interaction.member.voice.channel;
 
-            const queue = client.distube.getQueue(interaction);
+            const queue = client.player.getQueue(interaction.guild.id);
 
             if (!queue) {
                 await interaction.followUp({

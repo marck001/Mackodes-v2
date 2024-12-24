@@ -72,7 +72,7 @@ module.exports = {
 
       console.log('Processing songs:', songs.map(song => song.url));
 
-      const queue = client.distube.getQueue(voiceChannel);
+      const queue = client.player.getQueue(voiceChannel);
    
       if ( queue) {
         queue.songs = [];
@@ -84,7 +84,7 @@ module.exports = {
       }
 
       const firstSong = songs[0];
-      await client.distube.play(voiceChannel, firstSong.url, {
+      await client.player.play(voiceChannel, firstSong.url, {
         textChannel: interaction.channel,
         member: interaction.member,
         interaction: interaction,
@@ -99,7 +99,7 @@ module.exports = {
       for (let i = 1; i < songs.length; i++) {
         await new Promise(resolve => setTimeout(resolve, 2000)); 
         console.log(songs[i].url)
-        await client.distube.play(voiceChannel, songs[i].url, {
+        await client.player.play(voiceChannel, songs[i].url, {
           textChannel: interaction.channel,
           member: interaction.member,
           interaction: interaction,

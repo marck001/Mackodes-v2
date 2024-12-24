@@ -1,4 +1,4 @@
-const { hasRole} = require('../../functions/general/hasRole')
+const { hasRole } = require('../../functions/general/hasRole')
 const { isVoiceChannel } = require('../../functions/voice-channels/isVoiceChannel')
 module.exports = {
 
@@ -9,33 +9,26 @@ module.exports = {
 
         try {
 
-            const voiceChannel = interaction.member.voice.channel;
+            //const voiceChannel = interaction.member.voice.channel;
 
-            if (!isVoiceChannel(interaction) ||!hasRole(interaction)) return;
+            if (!isVoiceChannel(interaction) || !hasRole(interaction)) return;
 
             console.log('first')
             await interaction.deferReply();
 
-            const queue = client.distube.getQueue(voiceChannel);
-
-            if (!queue || !queue.songs.length) {
-            await    interaction.editReply("Queue is empty");
-                return;
+            if (!queue || !queue.playing || queue.previousTracks.length === 0) {
+                return interaction.editReply({ content: 'There is no previous song to go back to!', ephemeral: true });
             }
 
-            if (queue.playing) {
+          //  await queue.previous();
 
-                await queue.previous();
+            console.log('previous')
 
-                console.log('previous')
+            await interaction.followUp({
+                content: `**Previous song**`,
+                ephemeral: true
+            });
 
-                await interaction.followUp({
-                    content: `**Previous song**`,
-                    ephemeral: true
-                });
-            } else {
-              await  interaction.editReply("Nothing is getting played");
-            }
 
         } catch (err) {
 

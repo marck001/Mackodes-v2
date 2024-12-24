@@ -1,65 +1,59 @@
-const {
-  ApplicationCommandOptionType,
-  PermissionFlagsBits, ChannelType,
-} = require('discord.js');
-const { isVoiceChannel } = require('../../functions/voice-channels/isVoiceChannel')
-const { isValidYtUrl } = require('../../functions/blob/validYtUrl')
-module.exports = {
+const { ApplicationCommandOptionType } = require('discord.js');
+const { join } = require('path');
+const fs = require('fs');
+const { QueryType } = require('discord-player');
+const { isVoiceChannel } = require('../../functions/voice-channels/isVoiceChannel');
 
+module.exports = {
   name: 'play',
-  description: 'Play music or add to current queue',
-  options: [
-    {
-      name: 'music-url',
-      description: 'The message to send',
-      required: true,
-      type: ApplicationCommandOptionType.String,
-    },
-  ],
+  description: 'Play music or add to the current queue',
   devOnly: true,
 
   callback: async (client, interaction) => {
-    const url = interaction.options.getString('music-url');
+    const voiceChannel = interaction.member.voice.channel;
 
+    if (!isVoiceChannel(interaction)) return;
 
     try {
+      const fileName = 'echo-crusher.mp3';
+      const filePath = join(__dirname, '../../music', fileName);
 
-      const voiceChannel = interaction.member.voice.channel;
-
-      
-      if (!isVoiceChannel(interaction)) return;
-
-      if(!isValidYtUrl(url)){
-        return  interaction.reply({content:"You must provide a valid yt url",ephemeral:true});
+      if (!fs.existsSync(filePath)) {
+        return interaction.reply({ content: 'The specified file does not exist.', ephemeral: true });
+      }else{
+        console.log('it exists')
       }
-      console.log('first')
-      await interaction.deferReply();
 
-      console.log('second')
-    
-      await client.distube.play(voiceChannel, url, {
-        textChannel: interaction.channel,
-        member: interaction.member,
-        interaction,
-      })
+      console.log('Resolved file path:', filePath);
 
-      
-      console.log('Playing audio')
-
-      await interaction.followUp({
-        content: 'Playing audio...',
-        ephemeral:true
+      const queue = client.player.nodes.create(interaction.guild, {
+        metadata: { channel: interaction.channel },
       });
 
+      if (!queue.connection) await queue.connect(voiceChannel);
 
-    } catch (err) {
+      const track = await client.player.search(filePath, {
+        requestedBy: interaction.user,
+        searchEngine: 'attachment',
+      }).then(x => x.tracks[0]);
 
-      console.log(err)
-      await interaction.followUp({
-        content: `Someone tell Mac, there's a problem with my system.`,
+      if (!track) {
+        return interaction.reply({ content: 'Could not find or play the file.', ephemeral: true });
+      }
+
+      queue.addTrack(track);
+      if (!queue.node.isPlaying()) await queue.node.play();
+
+      await interaction.reply({
+        content: `Now playing local file: **${track.title}**`,
         ephemeral: true,
       });
-
+    } catch (error) {
+      console.error(error);
+      await interaction.reply({
+        content: 'There was an error trying to play the file.',
+        ephemeral: true,
+      });
     }
   },
 };

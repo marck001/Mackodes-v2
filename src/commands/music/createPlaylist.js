@@ -2,7 +2,6 @@ const {
     ApplicationCommandOptionType,
     PermissionFlagsBits, ChannelType,
 } = require('discord.js');
-const { isVoiceChannel } = require('../../functions/voice-channels/isVoiceChannel');
 const Playlist = require('../../models/Playlist');
 
 module.exports = {
@@ -16,12 +15,19 @@ module.exports = {
             required: true,
             type: ApplicationCommandOptionType.String,
         },
+        {
+            name: 'embed-img',
+            description: 'Attach an image url for playlist',
+            required: true,
+            type: ApplicationCommandOptionType.String,
+        },
     ],
     devOnly: true,
     permissionsRequired: [PermissionFlagsBits.Administrator],
 
     callback: async (client, interaction) => {
         const name = interaction.options.getString('name');
+        const embedImg = interaction.options.getString('embed-img');
 
 
         try {
@@ -30,7 +36,7 @@ module.exports = {
             const guildId = interaction.guild.id;
 
             await interaction.deferReply();
-            const playlist = new Playlist({userId: userId,  name: name,  guildId: guildId });
+            const playlist = new Playlist({userId: userId,  name: name,  guildId: guildId ,embed:embedImg});
             await playlist.save();
 
             await interaction.followUp({

@@ -32,7 +32,7 @@ const {
         await interaction.deferReply();
   
 
-        const queue = client.distube.getQueue(interaction);
+        const queue = client.player.getQueue(interaction.guild.id);
 
         if (!queue) {
           interaction.editReply("Queue is empty");
@@ -58,7 +58,7 @@ const {
        
     
           const firstSong = songs[0];
-          await client.distube.play(voiceChannel, firstSong.url, {
+          await client.player.play(voiceChannel, firstSong.url, {
             textChannel: interaction.channel,
             member: interaction.member,
             interaction: interaction,

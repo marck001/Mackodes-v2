@@ -19,6 +19,10 @@ const Playlist = sequelize.define('Playlist', {
         type: DataTypes.STRING(50),
         allowNull: false,
     },
+    embed: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+    },
 
 }, {
     tableName: 'Playlists',
