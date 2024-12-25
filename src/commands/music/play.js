@@ -31,12 +31,32 @@ module.exports = {
       });
 
       if (!queue.connection) await queue.connect(voiceChannel);
-
+ /*
       const track = await client.player.search(filePath, {
         requestedBy: interaction.user,
         searchEngine: 'attachment',
       }).then(x => x.tracks[0]);
 
+      
+      const track = {
+        title: 'Echo Crusher',
+        url: filePath,
+        duration: 'Unknown',
+        requestedBy: interaction.user,
+        extractor: 'attachment',
+      };
+      */
+
+      const track = {
+        title: 'Echo Crusher',
+        url: filePath,
+        duration: 'Unknown',
+        requestedBy: interaction.user,
+        createStream: () => fs.createReadStream(filePath),
+        extractor: 'attachment',
+      };
+
+      console.log(track )
       if (!track) {
         return interaction.reply({ content: 'Could not find or play the file.', ephemeral: true });
       }
