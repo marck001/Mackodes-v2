@@ -1,9 +1,8 @@
-const { ApplicationCommandOptionType } = require('discord.js');
 const { join } = require('path');
 const fs = require('fs');
-const { QueryType } = require('discord-player');
+const { useMainPlayer } = require('discord-player');
 const { isVoiceChannel } = require('../../functions/voice-channels/isVoiceChannel');
-
+const ffmpeg = require('fluent-ffmpeg');
 module.exports = {
   name: 'play',
   description: 'Play music or add to the current queue',
@@ -20,58 +19,50 @@ module.exports = {
 
       if (!fs.existsSync(filePath)) {
         return interaction.reply({ content: 'The specified file does not exist.', ephemeral: true });
-      }else{
-        console.log('it exists')
       }
 
       console.log('Resolved file path:', filePath);
 
-      const queue = client.player.nodes.create(interaction.guild, {
-        metadata: { channel: interaction.channel },
+     
+      const player = useMainPlayer();
+
+    
+      const queue = player.nodes.create(interaction.guild, {
+        metadata: {
+          channel: interaction.channel, 
+        },
       });
 
+    
       if (!queue.connection) await queue.connect(voiceChannel);
- /*
-      const track = await client.player.search(filePath, {
-        requestedBy: interaction.user,
-        searchEngine: 'attachment',
-      }).then(x => x.tracks[0]);
+
+     // const stream = fs.createReadStream(filePath);
+     const stream = ffmpeg(filePath)
+     .format('mp3')  // Set the format you need
+     .audioCodec('libmp3lame') // Ensure compatibility
+     .pipe();
 
       
-      const track = {
+      queue.addTrack({
         title: 'Echo Crusher',
+        description: 'Local File',
+        author: 'Local File',
         url: filePath,
         duration: 'Unknown',
         requestedBy: interaction.user,
-        extractor: 'attachment',
-      };
-      */
+        createStream: () =>stream,
+      });
 
-      const track = {
-        title: 'Echo Crusher',
-        url: filePath,
-        duration: 'Unknown',
-        requestedBy: interaction.user,
-        createStream: () => fs.createReadStream(filePath),
-        extractor: 'attachment',
-      };
-
-      console.log(track )
-      if (!track) {
-        return interaction.reply({ content: 'Could not find or play the file.', ephemeral: true });
-      }
-
-      queue.addTrack(track);
       if (!queue.node.isPlaying()) await queue.node.play();
 
       await interaction.reply({
-        content: `Now playing local file: **${track.title}**`,
-        ephemeral: true,
+        content: `Now playing: **${fileName}** in **${interaction.guild.name}**!`,
+        ephemeral: false, 
       });
     } catch (error) {
       console.error(error);
       await interaction.reply({
-        content: 'There was an error trying to play the file.',
+        content: 'There was an error trying to play the file in your server.',
         ephemeral: true,
       });
     }

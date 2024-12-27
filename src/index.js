@@ -32,34 +32,19 @@ const { AttachmentExtractor } = require('@discord-player/extractor');
 
     client.deleteMessages = false;
 
-    /*
-    client.distube = new DisTube(client, {
-      emitNewSongOnly: true,
-      emitAddSongWhenCreatingQueue: false,
-      emitAddListWhenCreatingQueue: false,
-      nsfw: true,
-      savePreviousSongs: true,
+    const player = new Player(client);
 
-    });
-     */
-    client.player = new Player(client, {
-      ytdlOptions: {
-        quality: 'highestaudio',
-        highWaterMark: 1 << 25,
-      },
-    });
-
-    client.player.events.on('playerError', (queue, error) => {
+    player.events.on('playerError', (queue, error) => {
       console.error(`Player error in guild ${queue.guild.id}:`, error);
-  });
+   });
   
-  client.player.events.on('error', (error) => {
+   player.events.on('error', (error) => {
       console.error('Global player error:', error);
   });
   
 
     eventHandler(client);
-    await client.player.extractors.register(AttachmentExtractor);
+    await player.extractors.register(AttachmentExtractor);
     console.log("Extractor plugin registered successfully.");
 
     client.on('ready', (c) => {
