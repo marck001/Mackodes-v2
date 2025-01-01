@@ -1,4 +1,4 @@
-const { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel } = require('@discordjs/voice');
+const { AudioPlayerStatus, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
 
 
 
@@ -49,6 +49,29 @@ class MusicPlayer {
             [this.queue[i], this.queue[j]] = [this.queue[j], this.queue[i]];
         }
     }
+
+    stop() {
+        this.audioPlayer.stop();
+        this.queue = [];
+        this.currentIndex = 0;
+    }
+
+    pause() {
+        if (this.audioPlayer.state.status === AudioPlayerStatus.Playing) {
+            this.audioPlayer.pause();
+            return true;
+        }
+        return false;
+    }
+
+    resume() {
+        if (this.audioPlayer.state.status === AudioPlayerStatus.Paused) {
+            this.audioPlayer.unpause();
+            return true;
+        }
+        return false;
+    }
+
 
 
 }
