@@ -1,6 +1,6 @@
 const {
     ApplicationCommandOptionType,
-    PermissionFlagsBits, ChannelType,
+    PermissionFlagsBits
 } = require('discord.js');
 const Playlist = require('../../models/Playlist');
 

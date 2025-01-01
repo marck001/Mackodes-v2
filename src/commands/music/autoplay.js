@@ -1,7 +1,4 @@
-const {
-    ApplicationCommandOptionType,
-    PermissionFlagsBits, ChannelType,
-  } = require('discord.js');
+
   const { isVoiceChannel } = require('../../functions/voice-channels/isVoiceChannel')
   const { hasRole} = require('../../functions/general/hasRole')
   module.exports = {
