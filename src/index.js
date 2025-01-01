@@ -1,14 +1,13 @@
 require('dotenv').config();
 const initializeDatabase = require('./db/dbInit');
-const { Player } = require('discord-player');
-const { AttachmentExtractor } = require('@discord-player/extractor');
+const { MusicPlayer } = require('./modules/music-player');
 
 (async () => {
   try {
 
     await initializeDatabase();
 
-    const { Client, IntentsBitField, Message } = require('discord.js');
+    const { Client, IntentsBitField} = require('discord.js');
     const eventHandler = require('./handlers/eventHandler');
 
     const client = new Client({
@@ -24,34 +23,11 @@ const { AttachmentExtractor } = require('@discord-player/extractor');
       ],
     });
 
-    /**
-     *
-     * @param {Client} client
-     * @param {Message} message
-     */
 
-    client.deleteMessages = false;
-
-    const player = new Player(client);
-
-    player.events.on('playerError', (queue, error) => {
-      console.error(`Player error in guild ${queue.guild.id}:`, error);
-   });
-  
-   player.events.on('error', (error) => {
-      console.error('Global player error:', error);
-  });
-  
+    client.player = new MusicPlayer();
 
     eventHandler(client);
-    await player.extractors.register(AttachmentExtractor);
-    console.log("Extractor plugin registered successfully.");
-
-    client.on('ready', (c) => {
-      client.user.setActivity('Music');
-
-    });
-
+    
     await client.login(process.env.TOKEN);
 
   } catch (error) {
